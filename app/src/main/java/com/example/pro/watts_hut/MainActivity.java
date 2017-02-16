@@ -97,12 +97,12 @@ public class MainActivity extends AppCompatActivity {
 
 
             Log.d(TAG, String.valueOf(internalToast == null));
-
             boast(Toast.makeText(context, message, Toast.LENGTH_SHORT));
 
             Log.d(TAG, "loadMovies: "+url);
 
             new loadDataTask().execute(url);
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
