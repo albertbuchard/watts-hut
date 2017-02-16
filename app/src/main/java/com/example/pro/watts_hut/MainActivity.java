@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "loadMovies: "+url);
 
             new loadDataTask().execute(url);
-
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
