@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">watts-hut</string>
-    <string name="image_api_url">http://image.tmdb.org/t/p/%1$s/%2$s</string>
+    <string name="image_api_url">http://image.tmdb.org/t/p/%1$s%2$s</string>
     <string name="movie_api_url">https://api.themoviedb.org/3/discover/movie</string>
     <string-array name="movie_api_sizes">
         <item>w185</item>
@@ -16,6 +16,7 @@
     <string name="movie_api_param_key">api_key</string>
     <string name="movie_api_param_sort">sort_by</string>
     <string name="movie_api_param_page">page</string>
+    <string name="movie_api_results_image">poster_path</string>
     <string-array name="movie_api_sorting">
         <item>popularity.asc</item>
         <item>popularity.desc</item>
