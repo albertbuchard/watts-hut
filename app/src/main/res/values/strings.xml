@@ -20,6 +20,8 @@
     <string name="movie_api_param_page">page</string>
     <string name="movie_api_results_image">poster_path</string>
     <string name="loading">loading</string>
+    <string name="sort_by_top">Top Rated</string>
+    <string name="sort_by_popular">Popular</string>
     <string-array name="movie_api_sorting">
         <item>popularity.asc</item>
         <item>popularity.desc</item>
