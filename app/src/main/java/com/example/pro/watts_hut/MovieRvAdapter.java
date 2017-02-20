@@ -140,6 +140,14 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.checkVisibleAndLoad();
     }
 
+    public List<MovieObject> swapDataset(List<MovieObject> cachedDataset) {
+        List<MovieObject> temp = mDataset;
+        mDataset = cachedDataset;
+        notifyDataSetChanged();
+        loading = false;
+        return temp;
+    }
+
     public interface OnLoadMoreListener {
         void onLoadMore();
     }
