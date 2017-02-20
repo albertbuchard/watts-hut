@@ -28,7 +28,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -37,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
     private MovieRvAdapter internalMovieAdapter;
     private RecyclerView recyclerView;
     private Context mContext;
+    final private int SORTING_POPULAR = R.string.movie_api_popular;
+    final private int SORTING_TOP_RATED = R.string.movie_api_top_rate;
+    private int currentSorting = R.string.movie_api_top_rate;
+    private List<MovieObject> cachedDatasetPopular = new ArrayList<MovieObject>();
+    private List<MovieObject> cachedDatasetToprated = new ArrayList<MovieObject>();
+    private int currentPagePopular = 0;
+    private int currentPageTopRated = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
         mContext = getApplicationContext();
 
-        // Hide UI - Go Fullscreen
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null)
-            actionBar.hide();
 
         // Setup recycler view
         recyclerView = (RecyclerView) findViewById(R.id.rv_movie_grid) ;
@@ -76,6 +78,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    public void goFullScreen() {
+        // Hide UI - Go Fullscreen
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null)
+            actionBar.hide();
     }
 
 //    private void hideViews() {
@@ -103,10 +115,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemId = item.getItemId();
-        if (menuItemId == R.id.action_refresh) {
+        if (menuItemId == R.id.action_sort) {
             Context context = this;
             String message = "Refresh!";
             boast(Toast.makeText(context, message, Toast.LENGTH_LONG));
+
+            if ( currentSorting == SORTING_POPULAR ) {
+                currentSorting = SORTING_TOP_RATED;
+                currentPagePopular = currentPage;
+                cachedDatasetPopular = internalMovieAdapter.swapDataset(cachedDatasetToprated);
+                currentPage = currentPageTopRated;
+                item.setTitle(R.string.sort_by_popular);
+            } else {
+                currentSorting = SORTING_POPULAR;
+
+                currentPageTopRated = currentPage;
+                cachedDatasetToprated = internalMovieAdapter.swapDataset(cachedDatasetPopular);
+                currentPage = currentPagePopular;
+                item.setTitle(R.string.sort_by_top);
+            }
+
             loadMovies();
         }
         return super.onOptionsItemSelected(item);
@@ -119,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
         currentPage += 1;
 
-        Uri builtURI = Uri.parse(getString(R.string.movie_api_popular)).buildUpon()
+        Uri builtURI = Uri.parse(getString(currentSorting)).buildUpon()
                 .appendQueryParameter(getString(R.string.movie_api_param_key), apiKey)
                 .appendQueryParameter(getString(R.string.movie_api_param_sort), sortingArray[0])
                 .appendQueryParameter(getString(R.string.movie_api_param_page), Integer.toString(currentPage))
