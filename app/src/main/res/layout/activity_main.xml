@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/movieGridView"
+<LinearLayout android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:numColumns="2"
-    android:columnCount="2"
-    android:layout_gravity="center"
-    android:stretchMode="columnWidth"
-    android:scrollbarAlwaysDrawHorizontalTrack="false"
-    android:scrollbarAlwaysDrawVerticalTrack="false"
-    android:alignmentMode="alignBounds">
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-</GridView>
+            <Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="64sp"
+                android:background="#FFFFFF"
+                android:layout_marginBottom="8dp"
+                >
+            </Toolbar>
+    <android.support.v7.widget.RecyclerView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/rv_movie_grid"
+        android:background="#000000"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
