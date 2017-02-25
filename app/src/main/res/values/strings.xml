@@ -14,7 +14,7 @@
         <item>original</item>
     </string-array>
     <string name="Refresh">Refresh</string>
-    <string name="movie_api_key">**YOUR_API_KEY**</string> 
+    <string name="movie_api_key">**YOUR_API_KEY**</string>
     <string name="movie_api_param_key">api_key</string>
     <string name="movie_api_param_sort">sort_by</string>
     <string name="movie_api_param_page">page</string>
