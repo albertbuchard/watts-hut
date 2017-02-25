@@ -19,7 +19,7 @@ import org.json.JSONException;
 public class MovieDetails extends AppCompatActivity {
     MainActivity.MovieObject movie;
     TextView movie_title;
-    TextView release_date;
+    TextView release_date; 
     TextView ratings;
     TextView synopsis;
     ImageView movieThumbnail;
