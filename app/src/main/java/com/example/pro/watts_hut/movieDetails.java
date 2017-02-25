@@ -32,7 +32,7 @@ public class MovieDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_detail);
 
-        // Get the intent and the parcelable MovieObject to populate the fields
+        // Get the intent and the parcelable MovieObject to populate the fields.
         // I could have just passed the JSON string, but I wanted to learn parcelables
         Bundle data = getIntent().getExtras();
         movie = (MainActivity.MovieObject) data.getParcelable("movie");
