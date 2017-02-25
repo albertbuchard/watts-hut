@@ -2,6 +2,8 @@ package com.example.pro.watts_hut;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.GridLayoutManager;
@@ -35,14 +37,14 @@ import java.util.List;
 public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = MovieRvAdapter.class.getSimpleName();
     public Context appContext;
-    private final int VIEW_ITEM = 1;
-    private final int VIEW_PROG = 0;
+    private final int VIEW_ITEM = 1; // Loaded item
+    private final int VIEW_PROG = 0; // Content is loading item
     private GridLayoutManager gridLayoutManager;
 
     public List<MovieObject> mDataset = new ArrayList<MovieObject>();
-    private OnLoadMoreListener onLoadMoreListener;
+    private OnLoadMoreListener onLoadMoreListener; // Custom listener for handling data loading
 
-    private int visibleThreshold = 20;
+    private int visibleThreshold = 20; // threshold distance from the last item at which we start loading more movies
     private int lastVisibleItem, totalItemCount;
     private boolean loading;
 
@@ -52,7 +54,7 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
 
-
+            // on scroll check if we need to load more movies
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -66,6 +68,10 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    /**
+     * Checks if the current scroll is close up to visibleThreshold from the lastVisibleItem.
+     * If so, calls the onLoadMoreListener.onLoadMore().
+     */
     public void checkVisibleAndLoad() {
         totalItemCount = gridLayoutManager.getItemCount();
         lastVisibleItem = gridLayoutManager.findLastVisibleItemPosition();
@@ -79,6 +85,12 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    /**
+     * Function called after movies have loaded in the background thread. Add MovieObjects to the
+     * dataset, and notifyDataSetChanged().
+     *
+     * @param movieObjectList
+     */
     public void addMovies (Collection<MovieObject> movieObjectList) {
         mDataset.addAll(movieObjectList);
         this.notifyDataSetChanged();
@@ -100,6 +112,7 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
             viewHolder = new MovieViewHolder(view);
         } else {
+            // Item is loading - inflate the progress id - TODO not usefull in this version of the app
             View view = inflater.inflate(layoutIdForProgressItem, viewGroup, shouldAttachToParentImmediately);
             viewHolder = new ProgressViewHolder(view);
         }
@@ -110,11 +123,10 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         Log.d(TAG, "#" + position);
-        //GridLayoutManager.LayoutParams layoutParams = (GridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
 
+        // Progress view holder is not necessary in the current app, but maybe project 2 will need it
         if (holder instanceof MovieViewHolder) {
             MovieViewHolder cast = (MovieViewHolder) holder;
-
             cast.bind(position);
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder cast = (ProgressViewHolder) holder;
@@ -130,16 +142,32 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
+    /**
+     * Selects between a loading and item view.
+     */
     public int getItemViewType(int position) {
         return mDataset.get(position) != null ? VIEW_ITEM : VIEW_PROG;
     }
 
+    /**
+     * Allows to set a callback when the recyclerview detects a scroll near the end of the list.
+     * Also calls the onLoadMoreListener.onLoadMore() after setting it.
+     *
+     * @param onLoadMoreListener
+     */
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
         onLoadMoreListener.onLoadMore();
         this.checkVisibleAndLoad();
     }
 
+    /**
+     * Allows to cache the whole list of movies and not reload them each time we change the sorting
+     * criterion.
+     *
+     * @param cachedDataset
+     * @return
+     */
     public List<MovieObject> swapDataset(List<MovieObject> cachedDataset) {
         List<MovieObject> temp = mDataset;
         mDataset = cachedDataset;
@@ -152,6 +180,11 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void onLoadMore();
     }
 
+    //
+
+    /**
+     * Extends ViewHolder. Holds the thumbnails and produce intent on click for detailed view.
+     */
     class MovieViewHolder extends RecyclerView.ViewHolder
         implements View.OnClickListener {
         ImageView movieThumbnail;
@@ -174,7 +207,6 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             // Set layout parameter of the thumbnail to make sure it is fullbleed
             Log.i(TAG, "bind: parent is" + movieThumbnail.getParent().toString());
 
-            //movieThumbnail.setLayoutParams();
             movieThumbnail.setAdjustViewBounds(true);
             movieThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
             movieThumbnail.setPadding(0, 0, 0, 0);
@@ -191,7 +223,12 @@ public class MovieRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(appContext, Integer.toString(this.position), Toast.LENGTH_SHORT).show();
+            // Create intent and add a Parcelable MovieObject in the extras
+            Intent intentDetail = new Intent(appContext, MovieDetails.class);
+            intentDetail.putExtra("movie", (Parcelable) mDataset.get(position));
+
+            // Start detail activity
+            appContext.startActivity(intentDetail);
         }
     }
 

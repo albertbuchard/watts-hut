@@ -38,4 +38,5 @@
         <item>vote_count.asc</item>
         <item>vote_count.desc</item>
     </string-array>
+    <string name="title_activity_movie_details">movieDetails</string>
 </resources>
